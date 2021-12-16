@@ -1,46 +1,37 @@
 fun main() {
 
-    fun part1(input: List<Int>): Int {
-        val inputCopy = input.toMutableList()
-        repeat(80) {
-            for (fishInd in inputCopy.indices) {
-                inputCopy[fishInd]--
-                if (inputCopy[fishInd] < 0) {
-                    inputCopy[fishInd] = 6
-                    inputCopy.add(8)
-                }
-            }
-        }
-        return inputCopy.size
-    }
-
-    fun part2(input: List<Int>): Long {
-        var map = input.groupingBy { it }.eachCount().mapValues { it.value.toLong() }.toMutableMap().apply { for (i in 0..8) putIfAbsent(i, 0L) }
-        val nextDayMap = ((0..8) zip Array(9) { 0L }).toMap().toMutableMap()
+    fun fishLife(input: List<Int>, days: Int): Long {
+        var fish = Array(9) {age ->  input.count {it == age}.toLong() }
+        val nextDayFish = Array(9) { 0L }
         var numberOfFish = input.size.toLong()
-        repeat(256) {
-            for (key in (8 downTo 0)) {
-                val value = map.getValue(key)
-                if (key > 0)
-                    nextDayMap[key - 1] = value
+        repeat(days) {
+            for (i in fish.indices.reversed()) {
+                val value = fish[i]
+                if (i > 0)
+                    nextDayFish[i - 1] = value
                 else {
-                    nextDayMap[8] = value
-                    nextDayMap.compute(6) {_, oldVal -> oldVal?.plus(value) }
+                    nextDayFish[8] = value
+                    nextDayFish[6] += value
                     numberOfFish += value
                 }
             }
-            map = HashMap(nextDayMap)
+            fish = nextDayFish.clone()
         }
         return numberOfFish
     }
 
+    fun part1(input: List<Int>) = fishLife(input, 80).toInt()
+
+    fun part2(input: List<Int>) = fishLife(input,256)
+
+
 
 //  test if implementation meets criteria from the description, like:
-    val testInput = readInput("Day06_test").first().split(",").map { it.toInt() }
+    val testInput = readIntList("Day06_test", ",")
     check(part1(testInput) == 5934)
     check(part2(testInput) == 26984457539)
 
-    val input = readInput("Day06").first().split(",").map { it.toInt() }
+    val input = readIntList("Day06", ",")
     println(part1(input))
     println(part2(input))
 }
