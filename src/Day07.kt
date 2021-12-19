@@ -1,4 +1,5 @@
 import kotlin.math.abs
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 fun main() {
@@ -9,8 +10,16 @@ fun main() {
     }
 
     fun part2(input: List<Int>): Int {
-        val avg = input.average().roundToInt()
-        return input.map { abs(it - avg) }.sumOf { n -> n * (n + 1) / 2 }
+        fun List<Int>.countFuel(bestPos: Int) = asSequence()
+            .map { abs(it - bestPos) }.sumOf { n -> n * (n + 1) / 2 }
+        val avg = input.average()
+        val roundBottom = avg.toInt()
+        val roundMath = avg.roundToInt()
+        return if (roundBottom == roundMath)
+            input.countFuel(roundBottom)
+        else
+            min(input.countFuel(roundBottom), input.countFuel(roundMath))
+
     }
 
 
