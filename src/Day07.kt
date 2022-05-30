@@ -9,7 +9,7 @@ fun main() {
     }
 
     fun part2(input: List<Int>): Int {
-        val avg = input.average().roundToInt()
+        val avg = input.average().minus(0.1).roundToInt()
         return input.map { abs(it - avg) }.sumOf { n -> n * (n + 1) / 2 }
     }
 
